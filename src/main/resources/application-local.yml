@@ -1,0 +1,20 @@
+spring:
+  application:
+      name: zero
+  datasource:
+    url:
+    username:
+    password:
+    driver-class-name:
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+      use-new-id-generator-mappings: false
+    generate-ddl: true
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        dialect: org.hibernate.dialect.PostgreSQLDialect
