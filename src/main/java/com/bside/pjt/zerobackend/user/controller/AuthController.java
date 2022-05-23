@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController {
 
+    // TODO: 테스트 용 임시 URL
+    @GetMapping
+    public ResponseEntity<String> main() {
+        return ResponseEntity.ok("🙌🏻Hello Zerolife🙌🏻");
+    }
+
     @GetMapping("apis/oauth/kakao")
     public ResponseEntity<String> socialLoginForKakao() {
         return ResponseEntity.ok("{code: 200, message: 카카오 소셜 로그인 성공}");

@@ -61,6 +61,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             })
             .and()
             .authorizeRequests()
+            .antMatchers(HttpMethod.GET, "/").permitAll()
             .antMatchers(HttpMethod.GET, "/apis/oauth/kakao").permitAll()
             .antMatchers(HttpMethod.GET, "/apis/oauth/redirect").permitAll()
             .anyRequest().authenticated();
