@@ -64,6 +64,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/").permitAll()
             .antMatchers(HttpMethod.GET, "/apis/oauth/kakao").permitAll()
             .antMatchers(HttpMethod.GET, "/apis/oauth/redirect").permitAll()
+            .antMatchers(HttpMethod.GET, "/apis/daily-mission-progress").permitAll()
             .anyRequest().authenticated();
     }
 
