@@ -18,16 +18,6 @@ public class MissionController {
 
     private final MissionService missionService;
 
-    @GetMapping("apis/daily-mission-progress-deprecated")
-    public ResponseEntity<CurrentMissionProgressResponse> findDailyMissionProgressDeprecated() {
-
-        // TODO: 추후 토큰에서 가져오는 로직 추가
-        final Long userId = 1L;
-        final MissionProgressDto result = missionService.findDailyMissionProgressDeprecated(userId);
-
-        return ResponseEntity.ok(CurrentMissionProgressResponse.from(result));
-    }
-
     @GetMapping("apis/daily-mission-progress")
     public ResponseEntity<CurrentMissionProgressResponse> findDailyMissionProgress() {
 
