@@ -34,6 +34,7 @@ public final class MissionProgressDto {
             .missionDescription(missionProgress.missionDescription())
             .missionProgressId(missionProgress.getId())
             .proofImageUrl(proofImageUrl)
+            .isCompleted(missionProgress.isCompleted())
             .createdAt(missionProgress.getCreatedAt())
             .daysOfProgress(daysOfProgress)
             .build();
