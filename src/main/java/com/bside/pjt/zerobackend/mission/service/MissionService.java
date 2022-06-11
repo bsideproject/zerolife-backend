@@ -2,8 +2,11 @@ package com.bside.pjt.zerobackend.mission.service;
 
 import com.bside.pjt.zerobackend.common.ErrorCode;
 import com.bside.pjt.zerobackend.common.ServiceException;
+import com.bside.pjt.zerobackend.mission.controller.request.ProveDailyMissionRequest;
+import com.bside.pjt.zerobackend.mission.domain.Evaluation;
 import com.bside.pjt.zerobackend.mission.domain.Mission;
 import com.bside.pjt.zerobackend.mission.domain.MissionProgress;
+import com.bside.pjt.zerobackend.mission.domain.ProofImage;
 import com.bside.pjt.zerobackend.mission.repository.MissionProgressRepository;
 import com.bside.pjt.zerobackend.mission.repository.MissionRepository;
 import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
@@ -62,5 +65,32 @@ public class MissionService {
         final MissionProgress today = new MissionProgress(userId, nextMission);
 
         missionProgressRepository.save(today);
+    }
+
+    @Transactional
+    public void updateDailyMissionProgress(final long userId, final ProveDailyMissionRequest request) {
+        // 1. 데일리 미션 조회
+        final MissionProgress missionProgress = missionProgressRepository.findById(request.getMissionProgressId())
+            .filter(m -> !m.isDeleted())
+            .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3002));
+
+        // TODO: 2. 주어진 데일리 미션을 업데이트 할 수 있는 사용자인지 확인
+        if (missionProgress.getUserId() != userId) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3003);
+        }
+
+        // 3. 인증 완료됐는지 확인
+        if (missionProgress.isCompleted()) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3004);
+        }
+
+        // 4. 이미 하루가 지났는지 확인
+        if (!missionProgress.isAvailableCompleted()) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3005);
+        }
+
+        // 5. 데일리 미션 인증 정보 업데이트
+        final ProofImage proofImage = new ProofImage(request.getProofImageUrl());
+        missionProgress.completeMission(proofImage, Evaluation.valueOf(request.getEvaluation()));
     }
 }

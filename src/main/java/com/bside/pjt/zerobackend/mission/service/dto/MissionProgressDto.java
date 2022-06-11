@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @Builder
+@ToString
 @RequiredArgsConstructor
 public final class MissionProgressDto {
 

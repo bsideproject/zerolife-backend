@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,10 +19,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class MissionProgress extends BaseEntity {
@@ -39,7 +43,8 @@ public class MissionProgress extends BaseEntity {
     @OneToMany(mappedBy = "missionProgress", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProofImage> proofImages = new ArrayList<>();
 
-    private String evaluation;
+    @Enumerated(EnumType.STRING)
+    private Evaluation evaluation;
 
     private boolean completed;
 
@@ -69,5 +74,21 @@ public class MissionProgress extends BaseEntity {
         final LocalDateTime createdAt = this.getCreatedAt().truncatedTo(ChronoUnit.DAYS);
 
         return today.equals(createdAt);
+    }
+
+    public boolean isAvailableCompleted() {
+        final LocalDateTime current = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        final LocalDateTime createdAt = this.getCreatedAt().truncatedTo(ChronoUnit.DAYS);
+
+        return current.equals(createdAt);
+    }
+
+    public void completeMission(final ProofImage image, final Evaluation evaluation) {
+        this.proofImages.add(image);
+        image.setMissionProgress(this);
+
+        this.evaluation = evaluation;
+        this.completed = true;
+        this.completedAt = LocalDateTime.now();
     }
 }
