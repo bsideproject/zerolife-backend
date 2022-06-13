@@ -4,7 +4,7 @@ import com.bside.pjt.zerobackend.common.oauth.service.KakaoOauth2Service;
 import com.bside.pjt.zerobackend.common.oauth.service.Oauth2Service;
 import org.springframework.web.client.RestTemplate;
 
-public class OauthServiceFactory {
+public class Oauth2ServiceFactory {
 
     public static Oauth2Service getOauth2Service(RestTemplate restTemplate, String registrationId) {
 

@@ -12,16 +12,16 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "spring.security.oauth2.client")
 public class Oauth2ClientProperties {
 
-    private final Map<String, Provider> providerMap = new HashMap<>();
+    private final Map<String, Provider> provider = new HashMap<>();
 
-    private final Map<String, Registration> registrationMap = new HashMap<>();
+    private final Map<String, Registration> registration = new HashMap<>();
 
-    public Map<String, Provider> getProviderMap() {
-        return this.providerMap;
+    public Map<String, Provider> getProvider() {
+        return this.provider;
     }
 
-    public Map<String, Registration> getRegistrationMap() {
-        return this.registrationMap;
+    public Map<String, Registration> getRegistration() {
+        return this.registration;
     }
 
 }

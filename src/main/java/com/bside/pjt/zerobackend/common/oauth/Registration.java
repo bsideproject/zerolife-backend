@@ -12,7 +12,7 @@ public class Registration {
     private String clientId;
     private String clientSecret;
     private String authorizationGrantType;
-    private String redirectUrl;
+    private String redirectUri;
     private Set<String> scope;
 
 }

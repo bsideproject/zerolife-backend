@@ -34,7 +34,7 @@ public class KakaoOauth2Service implements Oauth2Service {
     public void redirectAuthorizePage(ClientRegistration clientRegistration, String state, HttpServletResponse response) throws IOException {
         String authorizationUri = UriComponentsBuilder.fromUriString(clientRegistration.getProvider().getAuthorizationUri())
                 .queryParam("client_id", clientRegistration.getRegistration().getClientId())
-                .queryParam("redirect_uri", clientRegistration.getRegistration().getRedirectUrl())
+                .queryParam("redirect_uri", clientRegistration.getRegistration().getRedirectUri())
                 .queryParam("response_type", "code")
                 .queryParam("state", state)
                 .build().encode(StandardCharsets.UTF_8).toUriString();
@@ -52,7 +52,7 @@ public class KakaoOauth2Service implements Oauth2Service {
         params.add("grant_type", clientRegistration.getRegistration().getAuthorizationGrantType());
         params.add("client_id", clientRegistration.getRegistration().getClientId());
         params.add("client_secret", clientRegistration.getRegistration().getClientSecret());
-        params.add("redirect_uri", clientRegistration.getRegistration().getRedirectUrl());
+        params.add("redirect_uri", clientRegistration.getRegistration().getRedirectUri());
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, httpHeaders);

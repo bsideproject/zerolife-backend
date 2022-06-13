@@ -20,7 +20,7 @@ public class Oauth2Configurer {
 
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
-        List<ClientRegistration> registrations = oauth2ClientProperties.getRegistrationMap().keySet().stream()
+        List<ClientRegistration> registrations = oauth2ClientProperties.getRegistration().keySet().stream()
                 .map(c -> getRegistration(c))
                 .filter(registration -> registration != null)
                 .collect(Collectors.toList());
@@ -29,12 +29,12 @@ public class Oauth2Configurer {
     }
 
     private ClientRegistration getRegistration(String client) {
-        log.info("kakao : {}", oauth2ClientProperties.getRegistrationMap().get("kakao"));
-
+        log.info("kakao : {}", oauth2ClientProperties.getRegistration().get("kakao"));
+        log.info("client : {}", client);
         if (client.equals("kakao")) {
             return CustomOAuth2Provider.KAKAO.getBuilder(client)
-                    .registration(oauth2ClientProperties.getRegistrationMap().get("kakao"))
-                    .provider(oauth2ClientProperties.getProviderMap().get("kakao"))
+                    .registration(oauth2ClientProperties.getRegistration().get("kakao"))
+                    .provider(oauth2ClientProperties.getProvider().get("kakao"))
                     .build();
         }
 
