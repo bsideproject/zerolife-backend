@@ -1,10 +1,12 @@
 package com.bside.pjt.zerobackend.mission.controller;
 
 import com.bside.pjt.zerobackend.mission.controller.request.ProveDailyMissionRequest;
-import com.bside.pjt.zerobackend.mission.controller.response.CurrentMissionProgressResponse;
+import com.bside.pjt.zerobackend.mission.controller.response.DailyMissionProgressResponse;
 import com.bside.pjt.zerobackend.mission.service.MissionService;
+import com.bside.pjt.zerobackend.mission.service.dto.DailyMissionProgressDto;
 import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
 import java.net.URI;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +26,13 @@ public class MissionController {
     private final MissionService missionService;
 
     @GetMapping("apis/daily-mission-progress")
-    public ResponseEntity<CurrentMissionProgressResponse> findDailyMission() {
+    public ResponseEntity<DailyMissionProgressResponse> findDailyMission() {
 
         // TODO: 추후 토큰에서 가져오는 로직 추가
         final Long userId = 1L;
-        final MissionProgressDto result = missionService.findDailyMissionProgress(userId);
+        final DailyMissionProgressDto result = missionService.findDailyMissionProgress(userId);
 
-        return ResponseEntity.ok(CurrentMissionProgressResponse.from(result));
+        return ResponseEntity.ok(DailyMissionProgressResponse.from(result));
     }
 
     @PostMapping("apis/mission-progress")
@@ -38,7 +40,7 @@ public class MissionController {
 
         // TODO: 추후 토큰에서 가져오는 로직 추가
         final Long userId = 1L;
-        missionService.createDailyMissionProgress(userId);
+        missionService.createMissionProgress(userId);
 
         return ResponseEntity.created(URI.create("apis/daily-mission-progress")).build();
     }
@@ -51,8 +53,18 @@ public class MissionController {
 
         // TODO: 추후 토큰에서 가져오는 로직 추가
         final Long userId = 1L;
-        missionService.updateDailyMissionProgress(userId, missionProgressId, request);
+        missionService.updateMissionProgress(userId, missionProgressId, request);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("apis/mission-progress")
+    public ResponseEntity<List<MissionProgressDto>> findMissionProgressList() {
+
+        // TODO: 추후 토큰에서 가져오는 로직 추가
+        final Long userId = 1L;
+        final List<MissionProgressDto> result = missionService.findMissionProgressList(userId);
+
+        return ResponseEntity.ok(result);
     }
 }
