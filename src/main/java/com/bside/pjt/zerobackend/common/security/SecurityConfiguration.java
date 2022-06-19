@@ -67,7 +67,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             // TODO: 인증 기능 구현 완료 후, permitAll() 목록에서 제거
             .antMatchers(HttpMethod.GET, "/apis/daily-mission-progress").permitAll()
             .antMatchers(HttpMethod.POST, "/apis/mission-progress").permitAll()
-            .antMatchers(HttpMethod.PUT, "/apis/mission-progress").permitAll()
+            .antMatchers(HttpMethod.PUT, "/apis/mission-progress/*").permitAll()
             .antMatchers(HttpMethod.GET, "/apis/mission-progress").permitAll()
             .anyRequest().authenticated();
     }
