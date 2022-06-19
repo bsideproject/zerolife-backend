@@ -68,9 +68,9 @@ public class MissionService {
     }
 
     @Transactional
-    public void updateDailyMissionProgress(final long userId, final ProveDailyMissionRequest request) {
+    public void updateDailyMissionProgress(final long userId, final long missionProgressId, final ProveDailyMissionRequest request) {
         // 1. 데일리 미션 조회
-        final MissionProgress missionProgress = missionProgressRepository.findById(request.getMissionProgressId())
+        final MissionProgress missionProgress = missionProgressRepository.findById(missionProgressId)
             .filter(m -> !m.isDeleted())
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3002));
 

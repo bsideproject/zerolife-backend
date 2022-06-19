@@ -11,9 +11,6 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public final class ProveDailyMissionRequest {
 
-    @NotNull(message = "E3006")
-    final Long missionProgressId;
-
     @NotNull(message = "E3007")
     final String proofImageUrl;
 
