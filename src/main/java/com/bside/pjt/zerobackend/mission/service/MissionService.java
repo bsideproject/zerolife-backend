@@ -29,6 +29,8 @@ public class MissionService {
     private final MissionQueryRepository missionQueryRepository;
     private final MissionProgressRepository missionProgressRepository;
 
+    // TODO: 미션 데이터 전달 받으면 60으로 변경
+    private final int LAST_MISSION_ORDER = 5;
     private final int NUMBER_OF_MISSION_PER_PAGE = 6;
 
     @Transactional(readOnly = true)
@@ -68,7 +70,9 @@ public class MissionService {
         }
 
         // 4. 현재까지 진행한 데일리 미션의 다음 미션을 오늘의 미션으로 생성
-        final Mission nextMission = missionRepository.findByOrder(currentMissionOrder + 1)
+        final int rest = (currentMissionOrder + 1) % LAST_MISSION_ORDER;
+        final int nextOrder = (rest == 0) ? LAST_MISSION_ORDER : rest;
+        final Mission nextMission = missionRepository.findByOrder(nextOrder)
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E2000));
         final MissionProgress today = new MissionProgress(userId, nextMission);
 
