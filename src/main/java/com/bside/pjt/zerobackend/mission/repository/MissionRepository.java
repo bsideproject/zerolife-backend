@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MissionRepository extends JpaRepository<Mission, Long> {
 
-    Optional<Mission> getByOrder(final int order);
+    Optional<Mission> findByOrder(final int order);
 }
