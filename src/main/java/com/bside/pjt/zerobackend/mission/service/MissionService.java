@@ -10,6 +10,7 @@ import com.bside.pjt.zerobackend.mission.domain.ProofImage;
 import com.bside.pjt.zerobackend.mission.repository.MissionProgressRepository;
 import com.bside.pjt.zerobackend.mission.repository.MissionQueryRepository;
 import com.bside.pjt.zerobackend.mission.repository.MissionRepository;
+import com.bside.pjt.zerobackend.mission.service.dto.CompletedDailyMissionDto;
 import com.bside.pjt.zerobackend.mission.service.dto.DailyMissionProgressDto;
 import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
 import java.util.List;
@@ -149,5 +150,24 @@ public class MissionService {
         final int rest = totalCountOfMissionProgress % NUMBER_OF_MISSION_PER_PAGE;
 
         return rest == 0 ? rest : NUMBER_OF_MISSION_PER_PAGE - rest;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CompletedDailyMissionDto> findCompletedMissionProgressList(final long userId) {
+        // TODO: 1. 현재 탈퇴하지 않은 사용자인지 확인
+
+        // 2. 인증 완료된 데일리 미션 목록 조회
+        final AtomicInteger index = new AtomicInteger(1);
+        return missionProgressRepository.findAllByUserId(userId).stream()
+            .filter(MissionProgress::isCompleted)
+            .map(missionProgress -> CompletedDailyMissionDto.builder()
+                .missionProgressId(missionProgress.getId())
+                .missionTitle(missionProgress.missionTitle())
+                .progressOrder(index.getAndIncrement())
+                .proofImageUrl(missionProgress.proofImageUrl())
+                .evaluation(missionProgress.getEvaluation())
+                .completedAt(missionProgress.getCompletedAt())
+                .build())
+            .collect(Collectors.toList());
     }
 }

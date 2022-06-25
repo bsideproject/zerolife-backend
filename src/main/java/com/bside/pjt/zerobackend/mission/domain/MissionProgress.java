@@ -69,6 +69,14 @@ public class MissionProgress extends BaseEntity {
         return this.mission.getOrder();
     }
 
+    public String proofImageUrl() {
+        if (proofImages.size() == 0) {
+            return null;
+        }
+
+        return this.proofImages.get(0).getUrl();
+    }
+
     public boolean isCreatedToday() {
         final LocalDateTime today = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         final LocalDateTime createdAt = this.getCreatedAt().truncatedTo(ChronoUnit.DAYS);
