@@ -1,6 +1,7 @@
 package com.bside.pjt.zerobackend.mission.domain;
 
 import com.bside.pjt.zerobackend.common.domain.BaseEntity;
+import com.bside.pjt.zerobackend.user.domain.User;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -33,8 +34,9 @@ public class MissionProgress extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: User로 변경
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToOne
     @JoinColumn(name = "mission_id")
@@ -52,9 +54,13 @@ public class MissionProgress extends BaseEntity {
 
     private boolean deleted;
 
-    public MissionProgress(final Long userId, final Mission mission) {
-        this.userId = userId;
+    public MissionProgress(final User user, final Mission mission) {
+        this.user = user;
         this.mission = mission;
+    }
+
+    public Long userId() {
+        return this.user.getId();
     }
 
     public String missionTitle() {

@@ -1,6 +1,7 @@
 package com.bside.pjt.zerobackend.user.domain;
 
 import com.bside.pjt.zerobackend.common.domain.BaseEntity;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
+@Table(name = "user", schema = "zerolife")
 @Entity
 @Getter
 @NoArgsConstructor
