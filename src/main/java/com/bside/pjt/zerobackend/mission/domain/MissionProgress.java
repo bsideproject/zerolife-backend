@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -48,15 +49,19 @@ public class MissionProgress extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Evaluation evaluation;
 
+    @Column(name = "\"order\"")
+    private Integer order;
+
     private boolean completed;
 
     private LocalDateTime completedAt;
 
     private boolean deleted;
 
-    public MissionProgress(final User user, final Mission mission) {
+    public MissionProgress(final User user, final Mission mission, final int order) {
         this.user = user;
         this.mission = mission;
+        this.order = order;
     }
 
     public Long userId() {

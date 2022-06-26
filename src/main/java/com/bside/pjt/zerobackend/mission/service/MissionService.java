@@ -55,11 +55,8 @@ public class MissionService {
             throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3000);
         }
 
-        // 4. 현재 사용자가 총 며칠 째 미션을 진행 중인지 계산
-        final long daysOfProgress = missionProgressRepository.countByUserId(userId);
-
-        // 5. 조회한 데일리 미션 + 미션 정보를 반환
-        return DailyMissionProgressDto.of(current, daysOfProgress);
+        // 4. 조회한 데일리 미션 + 미션 정보를 반환
+        return DailyMissionProgressDto.from(current);
     }
 
     @Transactional
@@ -76,11 +73,13 @@ public class MissionService {
 
         // 3. 다음 미션 순서 설정
         int currentMissionOrder = 0;
+        int currentProgressOrder = 0;
         if (current.isPresent()) {
             if (current.get().isCreatedToday()) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3001);
             }
             currentMissionOrder = current.get().missionOrder();
+            currentProgressOrder = current.get().getOrder();
         }
 
         // 4. 현재까지 진행한 데일리 미션의 다음 미션을 오늘의 미션으로 생성
@@ -88,7 +87,7 @@ public class MissionService {
         final int nextOrder = (rest == 0) ? LAST_MISSION_ORDER : rest;
         final Mission nextMission = missionRepository.findByOrder(nextOrder)
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E2000));
-        final MissionProgress today = new MissionProgress(user, nextMission);
+        final MissionProgress today = new MissionProgress(user, nextMission, currentProgressOrder + 1);
 
         missionProgressRepository.save(today);
     }
@@ -130,16 +129,15 @@ public class MissionService {
         }
 
         // 2. 현재 사용자의 모든 데일리 미션 조회
-        final List<MissionProgress> missionProgressList = missionProgressRepository.findAllByUserId(userId);
+        final List<MissionProgress> missionProgressList = missionProgressRepository.findAllByUserIdOrderByOrder(userId);
 
         // 3. 2번 결과로 DTO 생성
         final List<MissionProgressDto> result;
-        final AtomicInteger index = new AtomicInteger(1);
         result = missionProgressList.stream()
             .map(missionProgress -> MissionProgressDto.builder()
                 .missionProgressId(missionProgress.getId())
                 .missionTitle(missionProgress.missionTitle())
-                .progressOrder(index.getAndIncrement())
+                .progressOrder(missionProgress.getOrder())
                 .isCompleted(missionProgress.isCompleted())
                 .build())
             .collect(Collectors.toList());
@@ -148,8 +146,10 @@ public class MissionService {
         final int needed = calculateNumberOfNeededMission(missionProgressList.size());
 
         // 5. 4번에서 계산한 수만큼 미션 조회 & DTO 생성
+        final int size = missionProgressList.size();
+        final AtomicInteger index = new AtomicInteger(size + 1);
         if (needed != 0) {
-            final int lastMissionOrder = missionProgressList.get(missionProgressList.size() - 1).missionOrder();
+            final int lastMissionOrder = missionProgressList.get(size - 1).missionOrder();
             final List<Mission> neededMissions = missionQueryRepository.findByIdStartsWith(lastMissionOrder + 1, needed);
             neededMissions.stream()
                 .map(mission -> new MissionProgressDto(mission.getTitle(), index.getAndIncrement()))
@@ -180,13 +180,11 @@ public class MissionService {
         }
 
         // 2. 인증 완료된 데일리 미션 목록 조회
-        final AtomicInteger index = new AtomicInteger(1);
-        return missionProgressRepository.findAllByUserId(userId).stream()
-            .filter(MissionProgress::isCompleted)
+        return missionProgressRepository.findAllByUserIdAndCompletedOrderByOrder(userId, true).stream()
             .map(missionProgress -> CompletedDailyMissionDto.builder()
                 .missionProgressId(missionProgress.getId())
                 .missionTitle(missionProgress.missionTitle())
-                .progressOrder(index.getAndIncrement())
+                .progressOrder(missionProgress.getOrder())
                 .proofImageUrl(missionProgress.proofImageUrl())
                 .evaluation(missionProgress.getEvaluation())
                 .completedAt(missionProgress.getCompletedAt())
