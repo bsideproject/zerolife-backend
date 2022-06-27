@@ -21,9 +21,9 @@ public final class DailyMissionProgressDto {
     private final Boolean isCompleted;
     private final LocalDateTime createdAt;
 
-    private final Long daysOfProgress;
+    private final Integer daysOfProgress;
 
-    public static DailyMissionProgressDto of(final MissionProgress missionProgress, final long daysOfProgress) {
+    public static DailyMissionProgressDto from(final MissionProgress missionProgress) {
         String proofImageUrl = null;
         if (missionProgress.getProofImages().size() != 0) {
             proofImageUrl = missionProgress.getProofImages().get(0).getUrl();
@@ -36,7 +36,7 @@ public final class DailyMissionProgressDto {
             .proofImageUrl(proofImageUrl)
             .isCompleted(missionProgress.isCompleted())
             .createdAt(missionProgress.getCreatedAt())
-            .daysOfProgress(daysOfProgress)
+            .daysOfProgress(missionProgress.getOrder())
             .build();
     }
 }

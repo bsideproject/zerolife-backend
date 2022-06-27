@@ -10,8 +10,11 @@ import com.bside.pjt.zerobackend.mission.domain.ProofImage;
 import com.bside.pjt.zerobackend.mission.repository.MissionProgressRepository;
 import com.bside.pjt.zerobackend.mission.repository.MissionQueryRepository;
 import com.bside.pjt.zerobackend.mission.repository.MissionRepository;
+import com.bside.pjt.zerobackend.mission.service.dto.CompletedDailyMissionDto;
 import com.bside.pjt.zerobackend.mission.service.dto.DailyMissionProgressDto;
 import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
+import com.bside.pjt.zerobackend.user.domain.User;
+import com.bside.pjt.zerobackend.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,6 +31,7 @@ public class MissionService {
     private final MissionRepository missionRepository;
     private final MissionQueryRepository missionQueryRepository;
     private final MissionProgressRepository missionProgressRepository;
+    private final UserRepository userRepository;
 
     // TODO: 미션 데이터 전달 받으면 60으로 변경
     private final int LAST_MISSION_ORDER = 5;
@@ -35,7 +39,12 @@ public class MissionService {
 
     @Transactional(readOnly = true)
     public DailyMissionProgressDto findDailyMissionProgress(final long userId) {
-        // TODO: 1. 현재 탈퇴하지 않은 사용자인지 확인
+        // 1. 현재 탈퇴하지 않은 사용자인지 확인
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
+        if (user.isDeleted()) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1001);
+        }
 
         // 2. 현재 사용자가 진행한 데일리 미션 중 가장 최근 것을 조회
         MissionProgress current = missionProgressRepository.findFirstByUserIdOrderByIdDesc(userId)
@@ -46,27 +55,31 @@ public class MissionService {
             throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3000);
         }
 
-        // 4. 현재 사용자가 총 며칠 째 미션을 진행 중인지 계산
-        final long daysOfProgress = missionProgressRepository.countByUserId(userId);
-
-        // 5. 조회한 데일리 미션 + 미션 정보를 반환
-        return DailyMissionProgressDto.of(current, daysOfProgress);
+        // 4. 조회한 데일리 미션 + 미션 정보를 반환
+        return DailyMissionProgressDto.from(current);
     }
 
     @Transactional
     public void createMissionProgress(final long userId) {
-        // TODO: 1. 현재 탈퇴하지 않은 사용자인지 확인
+        // 1. 현재 탈퇴하지 않은 사용자인지 확인
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
+        if (user.isDeleted()) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1001);
+        }
 
         // 2. 현재 사용자가 진행한 데일리 미션 중 가장 최근 것을 조회
         final Optional<MissionProgress> current = missionProgressRepository.findFirstByUserIdOrderByIdDesc(userId);
 
         // 3. 다음 미션 순서 설정
         int currentMissionOrder = 0;
+        int currentProgressOrder = 0;
         if (current.isPresent()) {
             if (current.get().isCreatedToday()) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3001);
             }
             currentMissionOrder = current.get().missionOrder();
+            currentProgressOrder = current.get().getOrder();
         }
 
         // 4. 현재까지 진행한 데일리 미션의 다음 미션을 오늘의 미션으로 생성
@@ -74,7 +87,7 @@ public class MissionService {
         final int nextOrder = (rest == 0) ? LAST_MISSION_ORDER : rest;
         final Mission nextMission = missionRepository.findByOrder(nextOrder)
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E2000));
-        final MissionProgress today = new MissionProgress(userId, nextMission);
+        final MissionProgress today = new MissionProgress(user, nextMission, currentProgressOrder + 1);
 
         missionProgressRepository.save(today);
     }
@@ -86,8 +99,8 @@ public class MissionService {
             .filter(m -> !m.isDeleted())
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3002));
 
-        // TODO: 2. 주어진 데일리 미션을 업데이트 할 수 있는 사용자인지 확인
-        if (missionProgress.getUserId() != userId) {
+        // 2. 주어진 데일리 미션을 업데이트 할 수 있는 사용자인지 확인
+        if (missionProgress.userId() != userId) {
             throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3003);
         }
 
@@ -108,19 +121,23 @@ public class MissionService {
 
     @Transactional(readOnly = true)
     public List<MissionProgressDto> findMissionProgressList(final long userId) {
-        // TODO: 1. 현재 탈퇴하지 않은 사용자인지 확인
+        // 1. 현재 탈퇴하지 않은 사용자인지 확인
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
+        if (user.isDeleted()) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1001);
+        }
 
         // 2. 현재 사용자의 모든 데일리 미션 조회
-        final List<MissionProgress> missionProgressList = missionProgressRepository.findAllByUserId(userId);
+        final List<MissionProgress> missionProgressList = missionProgressRepository.findAllByUserIdOrderByOrder(userId);
 
         // 3. 2번 결과로 DTO 생성
         final List<MissionProgressDto> result;
-        final AtomicInteger index = new AtomicInteger(1);
         result = missionProgressList.stream()
             .map(missionProgress -> MissionProgressDto.builder()
                 .missionProgressId(missionProgress.getId())
                 .missionTitle(missionProgress.missionTitle())
-                .progressOrder(index.getAndIncrement())
+                .progressOrder(missionProgress.getOrder())
                 .isCompleted(missionProgress.isCompleted())
                 .build())
             .collect(Collectors.toList());
@@ -129,8 +146,10 @@ public class MissionService {
         final int needed = calculateNumberOfNeededMission(missionProgressList.size());
 
         // 5. 4번에서 계산한 수만큼 미션 조회 & DTO 생성
+        final int size = missionProgressList.size();
+        final AtomicInteger index = new AtomicInteger(size + 1);
         if (needed != 0) {
-            final int lastMissionOrder = missionProgressList.get(missionProgressList.size() - 1).missionOrder();
+            final int lastMissionOrder = missionProgressList.get(size - 1).missionOrder();
             final List<Mission> neededMissions = missionQueryRepository.findByIdStartsWith(lastMissionOrder + 1, needed);
             neededMissions.stream()
                 .map(mission -> new MissionProgressDto(mission.getTitle(), index.getAndIncrement()))
@@ -149,5 +168,27 @@ public class MissionService {
         final int rest = totalCountOfMissionProgress % NUMBER_OF_MISSION_PER_PAGE;
 
         return rest == 0 ? rest : NUMBER_OF_MISSION_PER_PAGE - rest;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CompletedDailyMissionDto> findCompletedMissionProgressList(final long userId) {
+        // 1. 현재 탈퇴하지 않은 사용자인지 확인
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
+        if (user.isDeleted()) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1001);
+        }
+
+        // 2. 인증 완료된 데일리 미션 목록 조회
+        return missionProgressRepository.findAllByUserIdAndCompletedOrderByOrder(userId, true).stream()
+            .map(missionProgress -> CompletedDailyMissionDto.builder()
+                .missionProgressId(missionProgress.getId())
+                .missionTitle(missionProgress.missionTitle())
+                .progressOrder(missionProgress.getOrder())
+                .proofImageUrl(missionProgress.proofImageUrl())
+                .evaluation(missionProgress.getEvaluation())
+                .completedAt(missionProgress.getCompletedAt())
+                .build())
+            .collect(Collectors.toList());
     }
 }

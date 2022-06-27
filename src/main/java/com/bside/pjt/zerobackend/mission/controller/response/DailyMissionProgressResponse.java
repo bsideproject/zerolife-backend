@@ -12,7 +12,7 @@ public final class DailyMissionProgressResponse {
 
     private final MissionResponse mission;
     private final MissionProgressResponse missionProgress;
-    private final Long daysOfProgress;
+    private final Integer daysOfProgress;
 
     public static DailyMissionProgressResponse from(final DailyMissionProgressDto dto) {
         return new DailyMissionProgressResponse(

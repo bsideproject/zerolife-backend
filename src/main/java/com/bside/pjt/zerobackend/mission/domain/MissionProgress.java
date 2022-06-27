@@ -1,11 +1,13 @@
 package com.bside.pjt.zerobackend.mission.domain;
 
 import com.bside.pjt.zerobackend.common.domain.BaseEntity;
+import com.bside.pjt.zerobackend.user.domain.User;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,8 +35,9 @@ public class MissionProgress extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: User로 변경
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToOne
     @JoinColumn(name = "mission_id")
@@ -46,15 +49,23 @@ public class MissionProgress extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Evaluation evaluation;
 
+    @Column(name = "\"order\"")
+    private Integer order;
+
     private boolean completed;
 
     private LocalDateTime completedAt;
 
     private boolean deleted;
 
-    public MissionProgress(final Long userId, final Mission mission) {
-        this.userId = userId;
+    public MissionProgress(final User user, final Mission mission, final int order) {
+        this.user = user;
         this.mission = mission;
+        this.order = order;
+    }
+
+    public Long userId() {
+        return this.user.getId();
     }
 
     public String missionTitle() {
@@ -67,6 +78,14 @@ public class MissionProgress extends BaseEntity {
 
     public int missionOrder() {
         return this.mission.getOrder();
+    }
+
+    public String proofImageUrl() {
+        if (proofImages.size() == 0) {
+            return null;
+        }
+
+        return this.proofImages.get(0).getUrl();
     }
 
     public boolean isCreatedToday() {
