@@ -13,12 +13,14 @@ public class NewAchievedRewardResponse {
     private final Long achievedRewardId;
     private final String rewardName;
     private final Integer rewardRequirement;
+    private final String rewardImageUrl;
 
     public static NewAchievedRewardResponse from(final AchievedReward achievedReward) {
         return new NewAchievedRewardResponse(
             achievedReward.getId(),
             achievedReward.rewardName(),
-            achievedReward.rewardRequirement()
+            achievedReward.rewardRequirement(),
+            achievedReward.rewardImageUrl()
         );
     }
 }

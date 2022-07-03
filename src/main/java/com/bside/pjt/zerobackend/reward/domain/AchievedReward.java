@@ -51,6 +51,10 @@ public class AchievedReward extends BaseEntity {
         return this.reward.getRequirement();
     }
 
+    public String rewardImageUrl() {
+        return this.reward.getImageUrl();
+    }
+
     public int rewardOrder() {
         return this.reward.getOrder();
     }
