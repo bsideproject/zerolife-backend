@@ -1,7 +1,11 @@
 package com.bside.pjt.zerobackend.reward.domain;
 
+import com.bside.pjt.zerobackend.common.domain.BaseEntity;
 import com.bside.pjt.zerobackend.user.domain.User;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -14,8 +18,10 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AchievedReward {
+public class AchievedReward extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
@@ -27,4 +33,17 @@ public class AchievedReward {
     private Reward reward;
 
     private Integer progressOrder;
+
+    private Boolean checked;
+
+    public AchievedReward(final User user, final Reward reward, final int progressOrder) {
+        this.user = user;
+        this.reward = reward;
+        this.progressOrder = progressOrder;
+        this.checked = false;
+    }
+
+    public int rewardOrder() {
+        return this.reward.getOrder();
+    }
 }

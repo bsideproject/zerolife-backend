@@ -34,7 +34,7 @@ public class UserController {
 
         // TODO: 추후 토큰에서 가져오는 로직 추가
         final Long userId = 1L;
-        final List<AchievedRewardDto> result = rewardService.findAchievedRewards(userId);
+        final List<AchievedRewardDto> result = rewardService.findAllByUserId(userId);
 
         return ResponseEntity.ok(result);
     }

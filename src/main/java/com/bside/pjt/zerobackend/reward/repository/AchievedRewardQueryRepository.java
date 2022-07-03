@@ -12,8 +12,8 @@ public class AchievedRewardQueryRepository {
     private final EntityManager em;
 
     public List<Long> findAllRewardIdsByUserId(final long userId) {
-        final String query = "SELECT a.reward_id FROM AchievedReward a WHERE a.user_id = :userId";
-        return em.createQuery(query)
+        final String query = "SELECT a.reward.id FROM AchievedReward a WHERE a.user.id = :userId";
+        return em.createQuery(query, Long.class)
             .setParameter("userId", userId)
             .getResultList();
     }

@@ -13,6 +13,7 @@ import com.bside.pjt.zerobackend.mission.repository.MissionRepository;
 import com.bside.pjt.zerobackend.mission.service.dto.CompletedDailyMissionDto;
 import com.bside.pjt.zerobackend.mission.service.dto.DailyMissionProgressDto;
 import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
+import com.bside.pjt.zerobackend.reward.event.CreateAchieveRewardEvent;
 import com.bside.pjt.zerobackend.user.domain.User;
 import com.bside.pjt.zerobackend.user.repository.UserRepository;
 import java.util.List;
@@ -93,7 +94,7 @@ public class MissionService {
     }
 
     @Transactional
-    public void updateMissionProgress(final long userId, final long missionProgressId, final ProveDailyMissionRequest request) {
+    public CreateAchieveRewardEvent updateMissionProgress(final long userId, final long missionProgressId, final ProveDailyMissionRequest request) {
         // 1. 데일리 미션 조회
         final MissionProgress missionProgress = missionProgressRepository.findById(missionProgressId)
             .filter(m -> !m.isDeleted())
@@ -117,6 +118,8 @@ public class MissionService {
         // 5. 데일리 미션 인증 정보 업데이트
         final ProofImage proofImage = new ProofImage(request.getProofImageUrl());
         missionProgress.completeMission(proofImage, Evaluation.valueOf(request.getEvaluation()));
+
+        return new CreateAchieveRewardEvent(userId, missionProgress.getOrder());
     }
 
     @Transactional(readOnly = true)
