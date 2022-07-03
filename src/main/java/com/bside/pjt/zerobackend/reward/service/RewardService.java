@@ -72,4 +72,19 @@ public class RewardService {
                 return AchievedRewardDto.of(reward, isAchieved);})
             .collect(Collectors.toList());
     }
+
+    @Transactional
+    public List<AchievedReward> findAllNewAchievedRewards(final long userId) {
+        // 1. 탈퇴한 사용자가 아닌지 확인
+        final User user = userRepository.findByIdAndDeletedFalse(userId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
+
+        // 2. 아직 사용자가 확인하지 않은 달성 리워드 조회
+        final List<AchievedReward> achievedRewards =  achievedRewardRepository.findAllByUserIdAndCheckedFalse(userId);
+
+        // 3. 각각의 달성 리워드 확인 여부 변경
+        achievedRewards.forEach(AchievedReward::checked);
+
+        return achievedRewards;
+    }
 }
