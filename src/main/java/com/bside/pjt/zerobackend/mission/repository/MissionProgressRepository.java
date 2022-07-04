@@ -12,4 +12,6 @@ public interface MissionProgressRepository extends JpaRepository<MissionProgress
     List<MissionProgress> findAllByUserIdOrderByOrder(final long userId);
 
     List<MissionProgress> findAllByUserIdAndCompletedOrderByOrder(final long userId, final boolean completed);
+
+    int countByUserIdAndCompletedTrue(final long userId);
 }

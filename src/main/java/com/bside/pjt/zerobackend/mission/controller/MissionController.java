@@ -5,11 +5,13 @@ import com.bside.pjt.zerobackend.mission.controller.response.DailyMissionProgres
 import com.bside.pjt.zerobackend.mission.service.MissionService;
 import com.bside.pjt.zerobackend.mission.service.dto.DailyMissionProgressDto;
 import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
+import com.bside.pjt.zerobackend.reward.event.CreateAchieveRewardEvent;
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class MissionController {
+
+    private final ApplicationEventPublisher publisher;
 
     private final MissionService missionService;
 
@@ -53,7 +57,8 @@ public class MissionController {
 
         // TODO: 추후 토큰에서 가져오는 로직 추가
         final Long userId = 1L;
-        missionService.updateMissionProgress(userId, missionProgressId, request);
+        final CreateAchieveRewardEvent event = missionService.updateMissionProgress(userId, missionProgressId, request);
+        publisher.publishEvent(event);
 
         return ResponseEntity.noContent().build();
     }
