@@ -41,11 +41,8 @@ public class MissionService {
     @Transactional(readOnly = true)
     public DailyMissionProgressDto findDailyMissionProgress(final long userId) {
         // 1. 현재 탈퇴하지 않은 사용자인지 확인
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedFalse(userId)
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
-        if (user.isDeleted()) {
-            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1001);
-        }
 
         // 2. 현재 사용자가 진행한 데일리 미션 중 가장 최근 것을 조회
         MissionProgress current = missionProgressRepository.findFirstByUserIdOrderByIdDesc(userId)
@@ -63,11 +60,8 @@ public class MissionService {
     @Transactional
     public void createMissionProgress(final long userId) {
         // 1. 현재 탈퇴하지 않은 사용자인지 확인
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedFalse(userId)
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
-        if (user.isDeleted()) {
-            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1001);
-        }
 
         // 2. 현재 사용자가 진행한 데일리 미션 중 가장 최근 것을 조회
         final Optional<MissionProgress> current = missionProgressRepository.findFirstByUserIdOrderByIdDesc(userId);
@@ -95,27 +89,31 @@ public class MissionService {
 
     @Transactional
     public CreateAchieveRewardEvent updateMissionProgress(final long userId, final long missionProgressId, final ProveDailyMissionRequest request) {
-        // 1. 데일리 미션 조회
+        // 1. 현재 탈퇴하지 않은 사용자인지 확인
+        User user = userRepository.findByIdAndDeletedFalse(userId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
+
+        // 2. 데일리 미션 조회
         final MissionProgress missionProgress = missionProgressRepository.findById(missionProgressId)
             .filter(m -> !m.isDeleted())
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3002));
 
-        // 2. 주어진 데일리 미션을 업데이트 할 수 있는 사용자인지 확인
+        // 3. 주어진 데일리 미션을 업데이트 할 수 있는 사용자인지 확인
         if (missionProgress.userId() != userId) {
             throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3003);
         }
 
-        // 3. 인증 완료됐는지 확인
+        // 4. 인증 완료됐는지 확인
         if (missionProgress.isCompleted()) {
             throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3004);
         }
 
-        // 4. 이미 하루가 지났는지 확인
+        // 5. 이미 하루가 지났는지 확인
         if (!missionProgress.isAvailableCompleted()) {
             throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3005);
         }
 
-        // 5. 데일리 미션 인증 정보 업데이트
+        // 6. 데일리 미션 인증 정보 업데이트
         final ProofImage proofImage = new ProofImage(request.getProofImageUrl());
         missionProgress.completeMission(proofImage, Evaluation.valueOf(request.getEvaluation()));
 
@@ -125,11 +123,8 @@ public class MissionService {
     @Transactional(readOnly = true)
     public List<MissionProgressDto> findMissionProgressList(final long userId) {
         // 1. 현재 탈퇴하지 않은 사용자인지 확인
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedFalse(userId)
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
-        if (user.isDeleted()) {
-            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1001);
-        }
 
         // 2. 현재 사용자의 모든 데일리 미션 조회
         final List<MissionProgress> missionProgressList = missionProgressRepository.findAllByUserIdOrderByOrder(userId);
@@ -176,11 +171,8 @@ public class MissionService {
     @Transactional(readOnly = true)
     public List<CompletedDailyMissionDto> findCompletedMissionProgressList(final long userId) {
         // 1. 현재 탈퇴하지 않은 사용자인지 확인
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedFalse(userId)
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
-        if (user.isDeleted()) {
-            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1001);
-        }
 
         // 2. 인증 완료된 데일리 미션 목록 조회
         return missionProgressRepository.findAllByUserIdAndCompletedOrderByOrder(userId, true).stream()
