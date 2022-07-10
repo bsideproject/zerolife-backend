@@ -23,9 +23,14 @@ public class Mission extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    private MissionCategory category;
+
     private String title;
 
     private String description;
+
+    private String method;
 
     @Enumerated(EnumType.STRING)
     private MissionLevel level;

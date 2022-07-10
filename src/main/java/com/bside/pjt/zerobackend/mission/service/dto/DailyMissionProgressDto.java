@@ -1,5 +1,6 @@
 package com.bside.pjt.zerobackend.mission.service.dto;
 
+import com.bside.pjt.zerobackend.mission.domain.MissionCategory;
 import com.bside.pjt.zerobackend.mission.domain.MissionProgress;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public final class DailyMissionProgressDto {
 
+    private final MissionCategory missionCategory;
     private final String missionTitle;
     private final String missionDescription;
 
@@ -30,6 +32,7 @@ public final class DailyMissionProgressDto {
         }
 
         return DailyMissionProgressDto.builder()
+            .missionCategory(missionProgress.missionCategory())
             .missionTitle(missionProgress.missionTitle())
             .missionDescription(missionProgress.missionDescription())
             .missionProgressId(missionProgress.getId())

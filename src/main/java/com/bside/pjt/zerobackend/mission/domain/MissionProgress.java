@@ -68,6 +68,10 @@ public class MissionProgress extends BaseEntity {
         return this.user.getId();
     }
 
+    public MissionCategory missionCategory() {
+        return this.mission.getCategory();
+    }
+
     public String missionTitle() {
         return this.mission.getTitle();
     }
