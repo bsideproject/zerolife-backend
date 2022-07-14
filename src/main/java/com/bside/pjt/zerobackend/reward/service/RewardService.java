@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +65,7 @@ public class RewardService {
         final User user = userRepository.findByIdAndDeletedFalse(userId)
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
 
-        final List<Reward> rewards = rewardRepository.findAll();
+        final List<Reward> rewards = rewardRepository.findAll(Sort.by(Direction.ASC, "order"));
         final List<Long> achievedRewardIds = achievedRewardQueryRepository.findAllRewardIdsByUserId(userId);
 
         return rewards.stream()

@@ -10,4 +10,6 @@ public interface AchievedRewardRepository extends JpaRepository<AchievedReward, 
     Optional<AchievedReward> findFirstByUserIdOrderByCreatedAtDesc(final long userId);
 
     List<AchievedReward> findAllByUserIdAndCheckedFalse(final long userId);
+
+    int countByUserId(final long userId);
 }

@@ -69,6 +69,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST, "/apis/mission-progress").permitAll()
             .antMatchers(HttpMethod.PUT, "/apis/mission-progress/*").permitAll()
             .antMatchers(HttpMethod.GET, "/apis/mission-progress").permitAll()
+            .antMatchers(HttpMethod.GET, "/apis/users/mypage").permitAll()
             .antMatchers(HttpMethod.GET, "/apis/users/completed-missions").permitAll()
             .antMatchers(HttpMethod.GET, "/apis/users/achieved-rewards").permitAll()
             .antMatchers(HttpMethod.GET, "/apis/achieved-rewards/new").permitAll()
