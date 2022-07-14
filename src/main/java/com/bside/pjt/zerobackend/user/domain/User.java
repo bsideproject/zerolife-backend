@@ -27,8 +27,6 @@ public class User extends BaseEntity {
 
     private String socialLoginPlatform;
 
-    private String name;
-
     private String nickname;
 
     private String email;

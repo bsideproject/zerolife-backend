@@ -12,7 +12,7 @@ public class AuthController {
     // TODO: 테스트 용 임시 URL
     @GetMapping
     public ResponseEntity<String> main() {
-        return ResponseEntity.ok("🙌🏻Hello Zerolife🙌🏻");
+        return ResponseEntity.ok("Hello Zerolife");
     }
 
     @GetMapping("apis/oauth/kakao")

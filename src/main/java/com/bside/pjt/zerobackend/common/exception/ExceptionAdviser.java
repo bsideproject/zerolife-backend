@@ -1,5 +1,7 @@
-package com.bside.pjt.zerobackend.common;
+package com.bside.pjt.zerobackend.common.exception;
 
+import com.bside.pjt.zerobackend.common.ApiError;
+import com.bside.pjt.zerobackend.common.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

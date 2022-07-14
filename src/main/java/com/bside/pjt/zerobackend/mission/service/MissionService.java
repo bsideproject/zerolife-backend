@@ -1,7 +1,7 @@
 package com.bside.pjt.zerobackend.mission.service;
 
 import com.bside.pjt.zerobackend.common.ErrorCode;
-import com.bside.pjt.zerobackend.common.ServiceException;
+import com.bside.pjt.zerobackend.common.exception.ServiceException;
 import com.bside.pjt.zerobackend.mission.controller.request.ProveDailyMissionRequest;
 import com.bside.pjt.zerobackend.mission.domain.Evaluation;
 import com.bside.pjt.zerobackend.mission.domain.Mission;

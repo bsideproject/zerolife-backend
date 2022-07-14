@@ -1,5 +1,6 @@
-package com.bside.pjt.zerobackend.common;
+package com.bside.pjt.zerobackend.common.exception;
 
+import com.bside.pjt.zerobackend.common.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

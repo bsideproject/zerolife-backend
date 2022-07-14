@@ -1,7 +1,7 @@
 package com.bside.pjt.zerobackend.reward.service;
 
 import com.bside.pjt.zerobackend.common.ErrorCode;
-import com.bside.pjt.zerobackend.common.ServiceException;
+import com.bside.pjt.zerobackend.common.exception.ServiceException;
 import com.bside.pjt.zerobackend.mission.repository.MissionProgressRepository;
 import com.bside.pjt.zerobackend.reward.domain.AchievedReward;
 import com.bside.pjt.zerobackend.reward.domain.Reward;
