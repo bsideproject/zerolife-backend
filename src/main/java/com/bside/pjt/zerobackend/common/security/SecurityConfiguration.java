@@ -60,6 +60,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers(HttpMethod.GET, "/").permitAll()
             .antMatchers(HttpMethod.POST, "/apis/users").permitAll()
+            .antMatchers(HttpMethod.POST, "/apis/auth/token").permitAll()
             // TODO: 인증 기능 구현 완료 후, permitAll() 목록에서 제거
             .antMatchers(HttpMethod.GET, "/apis/daily-mission-progress").permitAll()
             .antMatchers(HttpMethod.POST, "/apis/mission-progress").permitAll()

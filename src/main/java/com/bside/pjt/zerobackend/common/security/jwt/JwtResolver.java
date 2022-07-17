@@ -6,22 +6,41 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.time.ZonedDateTime;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 
 @Slf4j
-public class JwtResolver {
+public class JwtResolver implements InitializingBean {
 
-    @Value("jwt.issuer")
+    @Value("${jwt.issuer}")
     private String issuer;
-    @Value("jwt.secret-key")
+    @Value("${jwt.secret-key}")
     private String secretKey;
+    @Value("${jwt.access-token-expired-days}")
+    private int accessTokenExpiredDays;
+
+    private Key key;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        final byte[] decoded = Base64.getDecoder().decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(decoded);
+    }
 
     public String parseToken(final HttpServletRequest request) {
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -81,5 +100,24 @@ public class JwtResolver {
 
         final JwtPrincipal principal = new JwtPrincipal(id, email, nickname);
         return new JwtAuthentication(null, principal, null);
+    }
+
+    public String issueAccessToken(final JwtPrincipal principal) {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("typ", "JWT");
+        headers.put("alg", SignatureAlgorithm.HS256.name());
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", principal.getId());
+        claims.put("email", principal.getEmail());
+        claims.put("nickname", principal.getNickname());
+
+        return Jwts.builder()
+            .setHeader(headers)
+            .setClaims(claims)
+            .setIssuer(issuer)
+            .setExpiration(Date.from(ZonedDateTime.now().plusDays(accessTokenExpiredDays).toInstant()))
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
     }
 }
