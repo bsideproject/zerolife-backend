@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -57,8 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers(HttpMethod.GET, "/").permitAll()
-            .antMatchers(HttpMethod.GET, "/apis/oauth/kakao").permitAll()
-            .antMatchers(HttpMethod.GET, "/apis/oauth/redirect").permitAll()
+            .antMatchers(HttpMethod.POST, "/apis/users").permitAll()
             // TODO: 인증 기능 구현 완료 후, permitAll() 목록에서 제거
             .antMatchers(HttpMethod.GET, "/apis/daily-mission-progress").permitAll()
             .antMatchers(HttpMethod.POST, "/apis/mission-progress").permitAll()
@@ -111,6 +112,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public JwtFilter jwtFilter() {
         return new JwtFilter(jwtResolver());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
 
