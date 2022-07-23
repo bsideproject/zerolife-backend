@@ -7,7 +7,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -19,16 +18,14 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
         throws IOException, ServletException {
-        if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            // 1. 헤더에서 토큰 가져오기
-            final String token = jwtResolver.parseToken((HttpServletRequest) request);
-            // 2. 토큰 유효성 검증하기
-            if (token != null && jwtResolver.validateToken(token)) {
-                // 3. 토큰이 유효한 경우, 토큰에서 Authentication 얻어오기
-                final Authentication authentication = jwtResolver.getAuthentication(token);
-                // 4. Authentication을 SecurityContext에 저장
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+        // 1. 헤더에서 토큰 가져오기
+        final String token = jwtResolver.parseToken((HttpServletRequest) request);
+        // 2. 토큰 유효성 검증하기
+        if (token != null && jwtResolver.validateToken(token)) {
+            // 3. 토큰이 유효한 경우, 토큰에서 Authentication 얻어오기
+            final JwtAuthentication authentication = jwtResolver.getAuthentication(token);
+            // 4. Authentication을 SecurityContext에 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
