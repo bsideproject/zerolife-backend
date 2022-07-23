@@ -30,7 +30,7 @@ public class UserController {
 
     @GetMapping("apis/users/mypage")
     public ResponseEntity<MyPageResponse> myPage(
-        @AuthenticationPrincipal JwtPrincipal principal
+        @AuthenticationPrincipal final JwtPrincipal principal
     ) {
         final Long userId = principal.getId();
         if (userId == null || userId == 0) {
@@ -43,20 +43,28 @@ public class UserController {
     }
 
     @GetMapping("apis/users/completed-missions")
-    public ResponseEntity<List<CompletedDailyMissionDto>> findCompletedMissions() {
+    public ResponseEntity<List<CompletedDailyMissionDto>> findCompletedMissions(
+        @AuthenticationPrincipal final JwtPrincipal principal
+    ) {
+        final Long userId = principal.getId();
+        if (userId == null || userId == 0) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1002);
+        }
 
-        // TODO: 추후 토큰에서 가져오는 로직 추가
-        final Long userId = 1L;
         final List<CompletedDailyMissionDto> result = missionService.findCompletedMissionProgressList(userId);
 
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("apis/users/achieved-rewards")
-    public ResponseEntity<List<AchievedRewardDto>> findAchievedRewards() {
+    public ResponseEntity<List<AchievedRewardDto>> findAchievedRewards(
+        @AuthenticationPrincipal final JwtPrincipal principal
+    ) {
+        final Long userId = principal.getId();
+        if (userId == null || userId == 0) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1002);
+        }
 
-        // TODO: 추후 토큰에서 가져오는 로직 추가
-        final Long userId = 1L;
         final List<AchievedRewardDto> result = rewardService.findAllByUserId(userId);
 
         return ResponseEntity.ok(result);

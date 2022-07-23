@@ -61,15 +61,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/").permitAll()
             .antMatchers(HttpMethod.POST, "/apis/users").permitAll()
             .antMatchers(HttpMethod.POST, "/apis/auth/token").permitAll()
-            // TODO: 인증 기능 구현 완료 후, permitAll() 목록에서 제거
-            .antMatchers(HttpMethod.GET, "/apis/daily-mission-progress").permitAll()
-            .antMatchers(HttpMethod.POST, "/apis/mission-progress").permitAll()
-            .antMatchers(HttpMethod.PUT, "/apis/mission-progress/*").permitAll()
-            .antMatchers(HttpMethod.GET, "/apis/mission-progress").permitAll()
-            .antMatchers(HttpMethod.GET, "/apis/users/mypage").permitAll()
-            .antMatchers(HttpMethod.GET, "/apis/users/completed-missions").permitAll()
-            .antMatchers(HttpMethod.GET, "/apis/users/achieved-rewards").permitAll()
-            .antMatchers(HttpMethod.GET, "/apis/achieved-rewards/new").permitAll()
             .anyRequest().authenticated()
 
             .and()
