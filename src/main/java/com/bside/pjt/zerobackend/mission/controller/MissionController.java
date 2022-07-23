@@ -1,5 +1,8 @@
 package com.bside.pjt.zerobackend.mission.controller;
 
+import com.bside.pjt.zerobackend.common.ErrorCode;
+import com.bside.pjt.zerobackend.common.exception.ServiceException;
+import com.bside.pjt.zerobackend.common.security.jwt.JwtPrincipal;
 import com.bside.pjt.zerobackend.mission.controller.request.ProveDailyMissionRequest;
 import com.bside.pjt.zerobackend.mission.controller.response.DailyMissionProgressResponse;
 import com.bside.pjt.zerobackend.mission.service.MissionService;
@@ -12,7 +15,9 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,20 +35,28 @@ public class MissionController {
     private final MissionService missionService;
 
     @GetMapping("apis/daily-mission-progress")
-    public ResponseEntity<DailyMissionProgressResponse> findDailyMission() {
+    public ResponseEntity<DailyMissionProgressResponse> findDailyMission(
+        @AuthenticationPrincipal final JwtPrincipal principal
+    ) {
+        final Long userId = principal.getId();
+        if (userId == null || userId == 0) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1002);
+        }
 
-        // TODO: 추후 토큰에서 가져오는 로직 추가
-        final Long userId = 1L;
         final DailyMissionProgressDto result = missionService.findDailyMissionProgress(userId);
 
         return ResponseEntity.ok(DailyMissionProgressResponse.from(result));
     }
 
     @PostMapping("apis/mission-progress")
-    public ResponseEntity<Void> createDailyMission() {
+    public ResponseEntity<Void> createDailyMission(
+        @AuthenticationPrincipal final JwtPrincipal principal
+    ) {
+        final Long userId = principal.getId();
+        if (userId == null || userId == 0) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1002);
+        }
 
-        // TODO: 추후 토큰에서 가져오는 로직 추가
-        final Long userId = 1L;
         missionService.createMissionProgress(userId);
 
         return ResponseEntity.created(URI.create("apis/daily-mission-progress")).build();
@@ -51,12 +64,15 @@ public class MissionController {
 
     @PutMapping("apis/mission-progress/{missionProgressId}")
     public ResponseEntity<Void> proveDailyMission(
+        @AuthenticationPrincipal final JwtPrincipal principal,
         @PathVariable final Long missionProgressId,
         @RequestBody @Valid final ProveDailyMissionRequest request
     ) {
+        final Long userId = principal.getId();
+        if (userId == null || userId == 0) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1002);
+        }
 
-        // TODO: 추후 토큰에서 가져오는 로직 추가
-        final Long userId = 1L;
         final CreateAchieveRewardEvent event = missionService.updateMissionProgress(userId, missionProgressId, request);
         publisher.publishEvent(event);
 
@@ -64,10 +80,14 @@ public class MissionController {
     }
 
     @GetMapping("apis/mission-progress")
-    public ResponseEntity<List<MissionProgressDto>> findMissionProgressList() {
+    public ResponseEntity<List<MissionProgressDto>> findMissionProgressList(
+        @AuthenticationPrincipal final JwtPrincipal principal
+    ) {
+        final Long userId = principal.getId();
+        if (userId == null || userId == 0) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1002);
+        }
 
-        // TODO: 추후 토큰에서 가져오는 로직 추가
-        final Long userId = 1L;
         final List<MissionProgressDto> result = missionService.findMissionProgressList(userId);
 
         return ResponseEntity.ok(result);

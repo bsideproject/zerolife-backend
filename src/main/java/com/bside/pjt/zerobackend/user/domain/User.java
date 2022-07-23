@@ -23,17 +23,13 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long socialMemberNumber;
+    private String email;
 
-    private String socialLoginPlatform;
+    private String password;
 
     private String nickname;
 
-    private String email;
-
     private String profileImageUrl;
-
-    private String profileMessage;
 
     private boolean requiredAgreement;
 
@@ -50,4 +46,18 @@ public class User extends BaseEntity {
     private String type;
 
     private boolean deleted;
+
+    public User(final String email, final String nickname, final String password, final boolean marketingAgreement) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.requiredAgreement = true;
+        this.requiredAgreedAt = LocalDateTime.now();
+        this.marketingAgreement = marketingAgreement;
+        if (marketingAgreement) {
+            this.marketingAgreedAt = LocalDateTime.now();
+        }
+        this.type = "USER";
+        this.deleted = false;
+    }
 }

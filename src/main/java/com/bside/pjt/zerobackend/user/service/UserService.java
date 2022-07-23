@@ -4,11 +4,14 @@ import com.bside.pjt.zerobackend.common.ErrorCode;
 import com.bside.pjt.zerobackend.common.exception.ServiceException;
 import com.bside.pjt.zerobackend.mission.repository.MissionProgressRepository;
 import com.bside.pjt.zerobackend.reward.repository.AchievedRewardRepository;
+import com.bside.pjt.zerobackend.user.controller.request.LoginRequest;
+import com.bside.pjt.zerobackend.user.controller.request.SignUpRequest;
 import com.bside.pjt.zerobackend.user.domain.User;
 import com.bside.pjt.zerobackend.user.repository.UserRepository;
 import com.bside.pjt.zerobackend.user.service.dto.MyPageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +22,43 @@ public class UserService {
     private final UserRepository userRepository;
     private final MissionProgressRepository missionProgressRepository;
     private final AchievedRewardRepository achievedRewardRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private final int TOTAL_MISSIONS_COUNT = 5;
+
+    @Transactional
+    public void create(final SignUpRequest request) {
+        if (userRepository.existsByEmailAndDeletedFalse(request.getEmail())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1013);
+        }
+
+        if (userRepository.existsByNicknameAndDeletedFalse(request.getNickname())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1014);
+        }
+
+        final String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        final User user = new User(
+            request.getEmail(),
+            request.getNickname(),
+            encodedPassword,
+            request.getMarketingAgreement()
+        );
+
+        userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User login(final LoginRequest request) {
+        final User user = userRepository.findByEmailAndDeletedFalse(request.getEmail())
+            .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new ServiceException(HttpStatus.UNAUTHORIZED.value(), ErrorCode.E1015);
+        }
+
+        return user;
+    }
 
     @Transactional(readOnly = true)
     public MyPageDto myPage(final long userId) {
