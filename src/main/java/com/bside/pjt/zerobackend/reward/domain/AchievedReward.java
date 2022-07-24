@@ -43,16 +43,8 @@ public class AchievedReward extends BaseEntity {
         this.checked = false;
     }
 
-    public String rewardName() {
-        return this.reward.getName();
-    }
-
     public int rewardRequirement() {
         return this.reward.getRequirement();
-    }
-
-    public String rewardImageUrl() {
-        return this.reward.getImageUrl();
     }
 
     public int rewardOrder() {

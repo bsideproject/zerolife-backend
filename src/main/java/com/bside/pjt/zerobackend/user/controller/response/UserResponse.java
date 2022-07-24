@@ -10,10 +10,5 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public class UserResponse {
 
-    private final String profileImageUrl;
     private final String nickname;
-
-    public static UserResponse from(final User user) {
-        return new UserResponse(user.getProfileImageUrl(), user.getNickname());
-    }
 }

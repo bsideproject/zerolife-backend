@@ -21,11 +21,7 @@ public class Reward extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-
     private Integer requirement;
-
-    private String imageUrl;
 
     private Integer order;
 }

@@ -29,8 +29,6 @@ public class User extends BaseEntity {
 
     private String nickname;
 
-    private String profileImageUrl;
-
     private boolean requiredAgreement;
 
     private LocalDateTime requiredAgreedAt;

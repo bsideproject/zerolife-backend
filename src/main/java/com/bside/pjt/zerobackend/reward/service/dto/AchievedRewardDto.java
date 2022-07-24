@@ -11,13 +11,11 @@ import lombok.ToString;
 public final class AchievedRewardDto {
 
     private final Long id;
-    private final String imageUrl;
     private final Boolean isAchieved;
 
     public static AchievedRewardDto of(final Reward reward, final boolean isAchieved) {
         return new AchievedRewardDto(
             reward.getId(),
-            reward.getImageUrl(),
             isAchieved
         );
     }

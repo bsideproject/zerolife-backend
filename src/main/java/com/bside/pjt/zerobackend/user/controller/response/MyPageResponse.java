@@ -15,7 +15,7 @@ public class MyPageResponse {
 
     public static MyPageResponse from(final MyPageDto dto) {
         return new MyPageResponse(
-            UserResponse.from(dto.getUser()),
+            new UserResponse(dto.getUser().getNickname()),
             new MissionStateResponse(
                 dto.getCompletedMissionsCount(),
                 dto.getLeftMissionsCount(),
