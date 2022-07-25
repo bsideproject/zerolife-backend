@@ -85,7 +85,7 @@ public class RewardService {
         final List<AchievedReward> achievedRewards =  achievedRewardRepository.findAllByUserIdAndCheckedFalse(userId);
 
         // 3. 각각의 달성 리워드 확인 여부 변경
-        achievedRewards.forEach(AchievedReward::checked);
+        achievedRewards.forEach(AchievedReward::check);
 
         return achievedRewards;
     }

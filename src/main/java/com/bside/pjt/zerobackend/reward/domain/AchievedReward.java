@@ -34,7 +34,9 @@ public class AchievedReward extends BaseEntity {
 
     private Integer progressOrder;
 
-    private Boolean checked;
+    private boolean checked;
+
+    private boolean deleted;
 
     public AchievedReward(final User user, final Reward reward, final int progressOrder) {
         this.user = user;
@@ -51,7 +53,11 @@ public class AchievedReward extends BaseEntity {
         return this.reward.getOrder();
     }
 
-    public void checked() {
+    public void check() {
         this.checked = true;
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 }

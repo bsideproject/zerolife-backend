@@ -2,13 +2,16 @@ package com.bside.pjt.zerobackend.user.service;
 
 import com.bside.pjt.zerobackend.common.ErrorCode;
 import com.bside.pjt.zerobackend.common.exception.ServiceException;
+import com.bside.pjt.zerobackend.mission.domain.MissionProgress;
 import com.bside.pjt.zerobackend.mission.repository.MissionProgressRepository;
+import com.bside.pjt.zerobackend.reward.domain.AchievedReward;
 import com.bside.pjt.zerobackend.reward.repository.AchievedRewardRepository;
 import com.bside.pjt.zerobackend.user.controller.request.LoginRequest;
 import com.bside.pjt.zerobackend.user.controller.request.SignUpRequest;
 import com.bside.pjt.zerobackend.user.domain.User;
 import com.bside.pjt.zerobackend.user.repository.UserRepository;
 import com.bside.pjt.zerobackend.user.service.dto.MyPageDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -82,5 +85,23 @@ public class UserService {
             .leftMissionsCount(leftMissionsCount)
             .achievedRewardsCount(achievedRewardsCount)
             .build();
+    }
+
+    @Transactional
+    public void delete(final long userId) {
+        // 1. 현재 탈퇴하지 않은 사용자인지 확인
+        final User user = userRepository.findByIdAndDeletedFalse(userId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1001));
+
+        // 2. 달성 리워드 삭제
+        final List<AchievedReward> achievedRewards = achievedRewardRepository.findAllByUserId(userId);
+        achievedRewards.forEach(AchievedReward::delete);
+
+        // 3. 데일리 미션 삭제
+        final List<MissionProgress> missionProgressList = missionProgressRepository.findAllByUserId(userId);
+        missionProgressList.forEach(MissionProgress::delete);
+
+        // 5. 유저 삭제
+        user.delete();
     }
 }

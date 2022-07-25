@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -68,5 +69,19 @@ public class UserController {
         final List<AchievedRewardDto> result = rewardService.findAllByUserId(userId);
 
         return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("apis/users")
+    public ResponseEntity<Void> quit(
+        @AuthenticationPrincipal final JwtPrincipal principal
+    ) {
+        final Long userId = principal.getId();
+        if (userId == null || userId == 0) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1002);
+        }
+
+        userService.delete(userId);
+
+        return ResponseEntity.noContent().build();
     }
 }

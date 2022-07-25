@@ -114,4 +114,9 @@ public class MissionProgress extends BaseEntity {
         this.completed = true;
         this.completedAt = LocalDateTime.now();
     }
+
+    public void delete() {
+        this.proofImages.forEach(ProofImage::delete);
+        this.deleted = true;
+    }
 }

@@ -9,6 +9,8 @@ public interface MissionProgressRepository extends JpaRepository<MissionProgress
 
     Optional<MissionProgress> findFirstByUserIdOrderByIdDesc(final long userId);
 
+    List<MissionProgress> findAllByUserId(final long userId);
+
     List<MissionProgress> findAllByUserIdOrderByOrder(final long userId);
 
     List<MissionProgress> findAllByUserIdAndCompletedOrderByOrder(final long userId, final boolean completed);

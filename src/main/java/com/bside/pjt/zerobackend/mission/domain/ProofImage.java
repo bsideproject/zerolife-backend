@@ -1,5 +1,6 @@
 package com.bside.pjt.zerobackend.mission.domain;
 
+import com.bside.pjt.zerobackend.common.domain.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,11 +29,17 @@ public class ProofImage {
 
     private String url;
 
+    private boolean deleted;
+
     public ProofImage(final String url) {
         this.url = url;
     }
 
     public void setMissionProgress(MissionProgress missionProgress) {
         this.missionProgress = missionProgress;
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 }

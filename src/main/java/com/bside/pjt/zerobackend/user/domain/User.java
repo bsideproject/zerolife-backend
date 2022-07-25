@@ -58,4 +58,8 @@ public class User extends BaseEntity {
         this.type = "USER";
         this.deleted = false;
     }
+
+    public void delete() {
+        this.deleted = true;
+    }
 }
