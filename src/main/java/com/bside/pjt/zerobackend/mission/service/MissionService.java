@@ -73,8 +73,12 @@ public class MissionService {
             if (current.get().isCreatedToday()) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3001);
             }
+
             currentMissionOrder = current.get().missionOrder();
             currentProgressOrder = current.get().getOrder();
+            if (currentMissionOrder == LAST_MISSION_ORDER) {
+                throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3010);
+            }
         }
 
         // 4. 현재까지 진행한 데일리 미션의 다음 미션을 오늘의 미션으로 생성

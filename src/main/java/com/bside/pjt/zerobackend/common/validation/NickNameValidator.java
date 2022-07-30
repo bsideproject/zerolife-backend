@@ -1,13 +1,14 @@
 package com.bside.pjt.zerobackend.common.validation;
 
 import com.bside.pjt.zerobackend.common.ErrorCode;
+import java.util.regex.Pattern;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class NickNameValidator implements ConstraintValidator<NickName, String> {
 
-    private final int MIN = 2;
-    private final int MAX = 20;
+    private final String PATTERN = "[가-힣a-zA-Z]*";
+    private final int MAX = 16;
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
@@ -16,7 +17,7 @@ public class NickNameValidator implements ConstraintValidator<NickName, String> 
             return false;
         }
 
-        if (value.length() < MIN) {
+        if (!Pattern.matches(PATTERN, value)) {
             changeConstraintViolation(ErrorCode.E1006, context);
             return false;
         }
