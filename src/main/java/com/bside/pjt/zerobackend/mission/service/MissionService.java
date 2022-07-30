@@ -70,7 +70,8 @@ public class MissionService {
         int currentMissionOrder = 0;
         int currentProgressOrder = 0;
         if (current.isPresent()) {
-            if (current.get().isCreatedToday()) {
+            // 관리자 계정은 테스트를 위해 제한없이 생성할 수 있도록 변경
+            if (user.isNotAdmin() && current.get().isCreatedToday()) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3001);
             }
 
@@ -82,6 +83,7 @@ public class MissionService {
         }
 
         // 4. 현재까지 진행한 데일리 미션의 다음 미션을 오늘의 미션으로 생성
+        // 추후 마지막 미션 달성 후 다시 첫 번째 미션을 받을 수도 있기에 로직은 그대로 유지
         final int rest = (currentMissionOrder + 1) % LAST_MISSION_ORDER;
         final int nextOrder = (rest == 0) ? LAST_MISSION_ORDER : rest;
         final Mission nextMission = missionRepository.findByOrder(nextOrder)

@@ -62,4 +62,8 @@ public class User extends BaseEntity {
     public void delete() {
         this.deleted = true;
     }
+
+    public boolean isNotAdmin() {
+        return !this.type.equals("ADMIN");
+    }
 }
