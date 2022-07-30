@@ -1,16 +1,17 @@
 package com.bside.pjt.zerobackend.mission.domain;
 
-import com.bside.pjt.zerobackend.common.domain.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Getter
@@ -27,11 +28,13 @@ public class ProofImage {
     @JoinColumn(name = "mission_progress_id")
     private MissionProgress missionProgress;
 
-    private String url;
+    @Lob
+    @Type(type = "org.hibernate.type.BinaryType")
+    private byte[] url;
 
     private boolean deleted;
 
-    public ProofImage(final String url) {
+    public ProofImage(final byte[] url) {
         this.url = url;
     }
 

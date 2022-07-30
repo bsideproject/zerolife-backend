@@ -16,6 +16,7 @@ import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
 import com.bside.pjt.zerobackend.reward.event.CreateAchieveRewardEvent;
 import com.bside.pjt.zerobackend.user.domain.User;
 import com.bside.pjt.zerobackend.user.repository.UserRepository;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -120,7 +121,7 @@ public class MissionService {
         }
 
         // 6. 데일리 미션 인증 정보 업데이트
-        final ProofImage proofImage = new ProofImage(request.getProofImageUrl());
+        final ProofImage proofImage = new ProofImage(request.getProofImageUrl().getBytes(StandardCharsets.UTF_8));
         missionProgress.completeMission(proofImage, Evaluation.valueOf(request.getEvaluation()));
 
         return new CreateAchieveRewardEvent(userId, missionProgress.getOrder());
@@ -186,7 +187,7 @@ public class MissionService {
                 .missionProgressId(missionProgress.getId())
                 .missionTitle(missionProgress.missionTitle())
                 .progressOrder(missionProgress.getOrder())
-                .proofImageUrl(missionProgress.proofImageUrl())
+                .proofImageUrl(new String(missionProgress.proofImageUrl(), StandardCharsets.UTF_8))
                 .evaluation(missionProgress.getEvaluation())
                 .completedAt(missionProgress.getCompletedAt())
                 .build())

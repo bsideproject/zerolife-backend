@@ -2,6 +2,7 @@ package com.bside.pjt.zerobackend.mission.service.dto;
 
 import com.bside.pjt.zerobackend.mission.domain.MissionCategory;
 import com.bside.pjt.zerobackend.mission.domain.MissionProgress;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public final class DailyMissionProgressDto {
     public static DailyMissionProgressDto from(final MissionProgress missionProgress) {
         String proofImageUrl = null;
         if (missionProgress.getProofImages().size() != 0) {
-            proofImageUrl = missionProgress.getProofImages().get(0).getUrl();
+            proofImageUrl = new String(missionProgress.getProofImages().get(0).getUrl(), StandardCharsets.UTF_8);
         }
 
         return DailyMissionProgressDto.builder()
