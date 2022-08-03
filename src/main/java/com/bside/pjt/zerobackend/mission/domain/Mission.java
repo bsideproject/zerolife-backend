@@ -32,6 +32,8 @@ public class Mission extends BaseEntity {
 
     private String method;
 
+    private String guideImageUrl;
+
     @Enumerated(EnumType.STRING)
     private MissionLevel level;
 

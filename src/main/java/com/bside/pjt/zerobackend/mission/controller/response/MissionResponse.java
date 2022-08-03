@@ -13,4 +13,6 @@ public final class MissionResponse {
     private final MissionCategory category;
     private final String title;
     private final String description;
+    private final String method;
+    private final String guideImageUrl;
 }
