@@ -80,6 +80,14 @@ public class MissionProgress extends BaseEntity {
         return this.mission.getDescription();
     }
 
+    public String missionMethod() {
+        return this.mission.getMethod();
+    }
+
+    public String missionGuideImageUrl() {
+        return this.mission.getGuideImageUrl();
+    }
+
     public int missionOrder() {
         return this.mission.getOrder();
     }

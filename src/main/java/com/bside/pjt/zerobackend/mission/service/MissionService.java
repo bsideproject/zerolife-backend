@@ -35,8 +35,7 @@ public class MissionService {
     private final MissionProgressRepository missionProgressRepository;
     private final UserRepository userRepository;
 
-    // TODO: 미션 데이터 전달 받으면 60으로 변경
-    private final int LAST_MISSION_ORDER = 5;
+    private final int LAST_MISSION_ORDER = 60;
     private final int NUMBER_OF_MISSION_PER_PAGE = 6;
 
     @Transactional(readOnly = true)

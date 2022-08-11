@@ -18,6 +18,8 @@ public final class DailyMissionProgressDto {
     private final MissionCategory missionCategory;
     private final String missionTitle;
     private final String missionDescription;
+    private final String missionMethod;
+    private final String missionGuideImageUrl;
 
     private final Long missionProgressId;
     private final String proofImageUrl;
@@ -36,6 +38,8 @@ public final class DailyMissionProgressDto {
             .missionCategory(missionProgress.missionCategory())
             .missionTitle(missionProgress.missionTitle())
             .missionDescription(missionProgress.missionDescription())
+            .missionMethod(missionProgress.missionMethod())
+            .missionGuideImageUrl(missionProgress.missionGuideImageUrl())
             .missionProgressId(missionProgress.getId())
             .proofImageUrl(proofImageUrl)
             .isCompleted(missionProgress.isCompleted())
