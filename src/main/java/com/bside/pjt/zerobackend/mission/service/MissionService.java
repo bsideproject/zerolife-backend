@@ -140,6 +140,7 @@ public class MissionService {
         result = missionProgressList.stream()
             .map(missionProgress -> MissionProgressDto.builder()
                 .missionProgressId(missionProgress.getId())
+                .missionCategory(missionProgress.missionCategory())
                 .missionTitle(missionProgress.missionTitle())
                 .progressOrder(missionProgress.getOrder())
                 .isCompleted(missionProgress.isCompleted())
@@ -156,7 +157,7 @@ public class MissionService {
             final int lastMissionOrder = missionProgressList.get(size - 1).missionOrder();
             final List<Mission> neededMissions = missionQueryRepository.findByIdStartsWith(lastMissionOrder + 1, needed);
             neededMissions.stream()
-                .map(mission -> new MissionProgressDto(mission.getTitle(), index.getAndIncrement()))
+                .map(mission -> new MissionProgressDto(mission.getCategory(), mission.getTitle(), index.getAndIncrement()))
                 .forEach(result::add);
         }
 

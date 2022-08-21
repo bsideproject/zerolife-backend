@@ -27,7 +27,7 @@ public class UserService {
     private final AchievedRewardRepository achievedRewardRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private final int TOTAL_MISSIONS_COUNT = 5;
+    private final int TOTAL_MISSIONS_COUNT = 60;
 
     @Transactional
     public void create(final SignUpRequest request) {
