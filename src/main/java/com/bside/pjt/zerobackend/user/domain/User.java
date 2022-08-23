@@ -66,4 +66,8 @@ public class User extends BaseEntity {
     public boolean isNotAdmin() {
         return !this.type.equals("ADMIN");
     }
+
+    public boolean isNotTester() {
+        return !this.type.equals("TESTER");
+    }
 }

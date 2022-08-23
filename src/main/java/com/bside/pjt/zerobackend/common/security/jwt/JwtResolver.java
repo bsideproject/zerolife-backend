@@ -86,6 +86,7 @@ public class JwtResolver implements InitializingBean {
         final Long id = claims.get("id", Long.class);
         final String email = claims.get("email", String.class);
         final String nickname = claims.get("nickname", String.class);
+        final String type = claims.get("type", String.class);
         if (id == null || id == 0) {
             log.error(ErrorCode.E1002.getMessage());
         }
@@ -95,8 +96,11 @@ public class JwtResolver implements InitializingBean {
         if (nickname == null || nickname.isBlank()) {
             log.error(ErrorCode.E1004.getMessage());
         }
+        if (type == null || type.isBlank()) {
+            log.error(ErrorCode.E1004.getMessage());
+        }
 
-        final JwtPrincipal principal = new JwtPrincipal(id, email, nickname);
+        final JwtPrincipal principal = new JwtPrincipal(id, email, nickname, type);
         return new JwtAuthentication(null, principal, null);
     }
 
@@ -109,6 +113,7 @@ public class JwtResolver implements InitializingBean {
         claims.put("id", principal.getId());
         claims.put("email", principal.getEmail());
         claims.put("nickname", principal.getNickname());
+        claims.put("type", principal.getType());
 
         return Jwts.builder()
             .setHeader(headers)
