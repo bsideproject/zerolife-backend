@@ -70,8 +70,8 @@ public class MissionService {
         int currentMissionOrder = 0;
         int currentProgressOrder = 0;
         if (current.isPresent()) {
-            // 관리자 계정은 테스트를 위해 제한없이 생성할 수 있도록 변경
-            if (user.isNotAdmin() && current.get().isCreatedToday()) {
+            // 테스트 계정은 리워드 획득 테스트를 위해 제한 없이 생성할 수 있도록 변경
+            if (user.isNotTester() && current.get().isCreatedToday()) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3001);
             }
 

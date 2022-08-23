@@ -11,6 +11,7 @@ import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
 import com.bside.pjt.zerobackend.reward.event.CreateAchieveRewardEvent;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,11 @@ public class MissionController {
         final Long userId = principal.getId();
         if (userId == null || userId == 0) {
             throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1002);
+        }
+
+        // 리워드 획득 테스트를 위해 테스터 계정의 경우, 데일리 미션을 조회할 때마다 새로운 데일리 미션을 생성하도록 수정
+        if (Objects.equals(principal.getType(), "TESTER")) {
+            missionService.createMissionProgress(userId);
         }
 
         final DailyMissionProgressDto result = missionService.findDailyMissionProgress(userId);
