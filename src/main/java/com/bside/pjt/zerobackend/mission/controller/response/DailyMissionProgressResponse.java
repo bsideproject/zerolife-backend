@@ -16,8 +16,19 @@ public final class DailyMissionProgressResponse {
 
     public static DailyMissionProgressResponse from(final DailyMissionProgressDto dto) {
         return new DailyMissionProgressResponse(
-            new MissionResponse(dto.getMissionCategory(), dto.getMissionTitle(), dto.getMissionDescription()),
-            new MissionProgressResponse(dto.getMissionProgressId(), dto.getProofImageUrl(), dto.getIsCompleted(), dto.getCreatedAt()),
+            new MissionResponse(
+                dto.getMissionCategory(),
+                dto.getMissionTitle(),
+                dto.getMissionDescription(),
+                dto.getMissionMethod(),
+                dto.getMissionGuideImageUrl()
+            ),
+            new MissionProgressResponse(
+                dto.getMissionProgressId(),
+                dto.getProofImageUrl(),
+                dto.getIsCompleted(),
+                dto.getCreatedAt()
+            ),
             dto.getDaysOfProgress()
         );
     }

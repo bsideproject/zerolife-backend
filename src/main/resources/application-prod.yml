@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: zero
+  datasource:
+    url: ENC(yw/zQKxleB/EuSZZ/Vsld/zYGcRRr8xrk9BFjsJd15YyflyanOK7izFcFt2pB9m8sD3bKFHqUF7LZcY3WEW3HM1yqnzCEPDN9IlGGVozev4=)
+    username: ENC(LtQ6SfX4sus2cFf35Qg03w==)
+    password: ENC(fKDGIH8i90Al5PYHycmzzba76Vr4lEUv)
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+      use-new-id-generator-mappings: false
+    generate-ddl: true
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  issuer: zerolife
+  secret-key: ENC(wzvRiV3BJ+SYW3JtuV21VbY0d24+Kj5O3MRhBIQfwsYXLe1EelrBd50j3b5THbC/mAqpuBO9N+f4EiJBqtiw6aCf5tF9i/t9cPlQuSYO9A9ASOWPYmv+ZWdC1GdD6aRZ4Yh2wxPfkXlwSevMmzLaFlxSC8eKbhtKn9GOjMU890E/8WO9/mp/zK6Slcz514wawAg5mGD7/qd+aQ0N4+WXhobAgSXM0R5CT8fSzxhtMyULI5WAe4WYBfrc6dgHvVuLOF5RIusykbSz1C48VxKV5W5XVzfIBx0g7dPK3an+iYPIe6E2rusj8JfSU+dj3AY7SlYR4Fyl1bYOuLcD1w6d9w3DKcqMQSfOVpsKISrOHwwKJWQc4XJILQzsHBdtMgDKgiK/nH8VPnA=)
+  access-token-expired-days: 3
+
+jasypt:
+  password: ${jasypt.password}

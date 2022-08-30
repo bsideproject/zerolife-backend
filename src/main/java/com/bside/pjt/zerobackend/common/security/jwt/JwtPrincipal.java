@@ -11,10 +11,12 @@ public class JwtPrincipal {
     private Long id;
     private String email;
     private String nickname;
+    private String type;
 
     public JwtPrincipal(final User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.nickname = user.getNickname();
+        this.type = user.getType();
     }
 }

@@ -3,6 +3,11 @@ package com.bside.pjt.zerobackend.common.logging;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +23,11 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Component
 public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
     protected static final Logger log = LoggerFactory.getLogger(RequestAndResponseLoggingFilter.class);
+
+    private static final List<Pattern> MASKING_FIELD_NAME_PATTERNS = Arrays.asList(
+        Pattern.compile("(\"password\" *: *)(\"[\\w|!@#$%^&*()]+\")"),
+        Pattern.compile("(\"proofImageUrl\" *: *)(\"[\\w|!@#$%^&*()]+\")")
+    );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -44,7 +54,6 @@ public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
         }
     }
 
-    // TODO: 개인 정보가 들어가 있는 request body는 추후 안 보이도록 처리
     private static void logRequest(ContentCachingRequestWrapper request) throws UnsupportedEncodingException {
         log.info("---------- REQUEST ----------");
         final String method = request.getMethod();
@@ -56,7 +65,10 @@ public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
         final String encoding = request.getCharacterEncoding();
         if (content.length > 0) {
             log.info(String.format(">>> content-type : %s", request.getContentType()));
-            log.info(String.format(">>> content : %s", new String(content, encoding)));
+
+            final StringBuilder body = new StringBuilder();
+            convert(encoding, body);
+            log.info(String.format(">>> content : %s", body));
         }
     }
 
@@ -69,5 +81,34 @@ public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
         if (content.length > 0) {
             log.info(String.format(">>> content : %s", new String(content, StandardCharsets.UTF_8)));
         }
+    }
+
+    private static void convert(String contentString, StringBuilder builder) {
+        Stream.of(contentString.split("\r\n|\r|\n")).forEach(line -> {
+            if (line.contains("\"password\"") || line.contains("\"proofImageUrl\"")) {
+                line = mask(line);
+            }
+            builder.append(line).append("\n");
+        });
+    }
+
+    private static String mask(final String target) {
+        final var output = new StringBuilder();
+        MASKING_FIELD_NAME_PATTERNS.stream()
+            .map(pattern -> pattern.matcher(target))
+            .filter(Matcher::find)
+            .findFirst()
+            .ifPresentOrElse(
+                matcher -> {
+                    output.append(target, 0, matcher.start())
+                        .append(matcher.group(1))
+                        .append(matcher.group(2).replaceAll("[\\w`~!@#$%^&*()-_=+{};:,.<>/?]+", "*".repeat(8)));
+                },
+                () -> {
+                    output.append(target);
+                }
+            );
+
+        return output.toString();
     }
 }

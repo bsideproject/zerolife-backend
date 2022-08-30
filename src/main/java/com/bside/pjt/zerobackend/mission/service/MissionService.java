@@ -35,8 +35,7 @@ public class MissionService {
     private final MissionProgressRepository missionProgressRepository;
     private final UserRepository userRepository;
 
-    // TODO: 미션 데이터 전달 받으면 60으로 변경
-    private final int LAST_MISSION_ORDER = 5;
+    private final int LAST_MISSION_ORDER = 60;
     private final int NUMBER_OF_MISSION_PER_PAGE = 6;
 
     @Transactional(readOnly = true)
@@ -71,8 +70,8 @@ public class MissionService {
         int currentMissionOrder = 0;
         int currentProgressOrder = 0;
         if (current.isPresent()) {
-            // 관리자 계정은 테스트를 위해 제한없이 생성할 수 있도록 변경
-            if (user.isNotAdmin() && current.get().isCreatedToday()) {
+            // 테스트 계정은 리워드 획득 테스트를 위해 제한 없이 생성할 수 있도록 변경
+            if (user.isNotTester() && current.get().isCreatedToday()) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E3001);
             }
 
@@ -141,6 +140,7 @@ public class MissionService {
         result = missionProgressList.stream()
             .map(missionProgress -> MissionProgressDto.builder()
                 .missionProgressId(missionProgress.getId())
+                .missionCategory(missionProgress.missionCategory())
                 .missionTitle(missionProgress.missionTitle())
                 .progressOrder(missionProgress.getOrder())
                 .isCompleted(missionProgress.isCompleted())
@@ -157,7 +157,7 @@ public class MissionService {
             final int lastMissionOrder = missionProgressList.get(size - 1).missionOrder();
             final List<Mission> neededMissions = missionQueryRepository.findByIdStartsWith(lastMissionOrder + 1, needed);
             neededMissions.stream()
-                .map(mission -> new MissionProgressDto(mission.getTitle(), index.getAndIncrement()))
+                .map(mission -> new MissionProgressDto(mission.getCategory(), mission.getTitle(), index.getAndIncrement()))
                 .forEach(result::add);
         }
 

@@ -13,8 +13,7 @@ public class MissionQueryRepository {
 
     private final EntityManager em;
 
-    // TODO: 미션 데이터 전달 받으면 60으로 변경
-    private final int LAST_MISSION_ORDER = 5;
+    private final int LAST_MISSION_ORDER = 60;
 
     public List<Mission> findByIdStartsWith(final int start, final int limit) {
         StringBuilder query = new StringBuilder("SELECT m FROM Mission m WHERE m.id in :ids ORDER BY CASE m.id ");
