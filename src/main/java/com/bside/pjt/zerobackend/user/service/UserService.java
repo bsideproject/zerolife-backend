@@ -73,8 +73,8 @@ public class UserService {
         final int completedMissionsCount = missionProgressRepository.countByUserIdAndCompletedTrue(userId);
 
         // 3. 남은 미션 수 계산
-        final int rest = missionProgressRepository.countByUserId(userId) % TOTAL_MISSIONS_COUNT;
-        final int leftMissionsCount = TOTAL_MISSIONS_COUNT - rest;
+        final int current = missionProgressRepository.countByUserId(userId);
+        final int leftMissionsCount = TOTAL_MISSIONS_COUNT - current;
 
         // 4. 달성 리워드 수 계산
         final int achievedRewardsCount = achievedRewardRepository.countByUserId(userId);
