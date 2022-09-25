@@ -23,5 +23,13 @@ jwt:
   secret-key: ENC(wzvRiV3BJ+SYW3JtuV21VbY0d24+Kj5O3MRhBIQfwsYXLe1EelrBd50j3b5THbC/mAqpuBO9N+f4EiJBqtiw6aCf5tF9i/t9cPlQuSYO9A9ASOWPYmv+ZWdC1GdD6aRZ4Yh2wxPfkXlwSevMmzLaFlxSC8eKbhtKn9GOjMU890E/8WO9/mp/zK6Slcz514wawAg5mGD7/qd+aQ0N4+WXhobAgSXM0R5CT8fSzxhtMyULI5WAe4WYBfrc6dgHvVuLOF5RIusykbSz1C48VxKV5W5XVzfIBx0g7dPK3an+iYPIe6E2rusj8JfSU+dj3AY7SlYR4Fyl1bYOuLcD1w6d9w3DKcqMQSfOVpsKISrOHwwKJWQc4XJILQzsHBdtMgDKgiK/nH8VPnA=)
   access-token-expired-days: 3
 
+ncp:
+  object-storage:
+    endpoint: https://kr.object.ncloudstorage.com
+    region: kr-standard
+    access-key: ENC(ygiSQBIs90hkXJGF9I/UEca2NETsO2COp3KQOMeSmFc=)
+    secret-key: ENC(16uTy1yMZNkO1hQzuWPfc9ypC9COqJf+6YZhaK1tmvIzMfbnMIQ3fc5YnffMIFZ5PeheOzuIHXU=)
+    bucket: zerolife-assets-prod
+
 jasypt:
   password: ${jasypt.password}

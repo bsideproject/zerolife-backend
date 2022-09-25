@@ -92,7 +92,7 @@ public class MissionProgress extends BaseEntity {
         return this.mission.getOrder();
     }
 
-    public byte[] proofImageUrl() {
+    public String proofImageUrl() {
         if (proofImages.size() == 0) {
             return null;
         }
