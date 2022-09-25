@@ -2,7 +2,6 @@ package com.bside.pjt.zerobackend.mission.service;
 
 import com.bside.pjt.zerobackend.common.ErrorCode;
 import com.bside.pjt.zerobackend.common.exception.ServiceException;
-import com.bside.pjt.zerobackend.mission.controller.request.ProveDailyMissionRequest;
 import com.bside.pjt.zerobackend.mission.domain.Evaluation;
 import com.bside.pjt.zerobackend.mission.domain.Mission;
 import com.bside.pjt.zerobackend.mission.domain.MissionProgress;
@@ -16,7 +15,6 @@ import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
 import com.bside.pjt.zerobackend.reward.event.CreateAchieveRewardEvent;
 import com.bside.pjt.zerobackend.user.domain.User;
 import com.bside.pjt.zerobackend.user.repository.UserRepository;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -94,7 +92,7 @@ public class MissionService {
     }
 
     @Transactional
-    public CreateAchieveRewardEvent updateMissionProgress(final long userId, final long missionProgressId, final ProveDailyMissionRequest request) {
+    public CreateAchieveRewardEvent updateMissionProgress(final long userId, final long missionProgressId, final String proofImageUrl, final String evaluation) {
         // 1. 현재 탈퇴하지 않은 사용자인지 확인
         User user = userRepository.findByIdAndDeletedFalse(userId)
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
@@ -120,8 +118,8 @@ public class MissionService {
         }
 
         // 6. 데일리 미션 인증 정보 업데이트
-        final ProofImage proofImage = new ProofImage(request.getProofImageUrl().getBytes(StandardCharsets.UTF_8));
-        missionProgress.completeMission(proofImage, Evaluation.valueOf(request.getEvaluation()));
+        final ProofImage proofImage = new ProofImage(proofImageUrl);
+        missionProgress.completeMission(proofImage, Evaluation.valueOf(evaluation));
 
         return new CreateAchieveRewardEvent(userId, missionProgress.getOrder());
     }
@@ -187,7 +185,7 @@ public class MissionService {
                 .missionProgressId(missionProgress.getId())
                 .missionTitle(missionProgress.missionTitle())
                 .progressOrder(missionProgress.getOrder())
-                .proofImageUrl(new String(missionProgress.proofImageUrl(), StandardCharsets.UTF_8))
+                .proofImageUrl(missionProgress.proofImageUrl())
                 .evaluation(missionProgress.getEvaluation())
                 .completedAt(missionProgress.getCompletedAt())
                 .build())

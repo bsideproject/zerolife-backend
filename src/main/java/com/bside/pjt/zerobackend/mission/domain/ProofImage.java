@@ -28,13 +28,11 @@ public class ProofImage {
     @JoinColumn(name = "mission_progress_id")
     private MissionProgress missionProgress;
 
-    @Lob
-    @Type(type = "org.hibernate.type.BinaryType")
-    private byte[] url;
+    private String url;
 
     private boolean deleted;
 
-    public ProofImage(final byte[] url) {
+    public ProofImage(final String url) {
         this.url = url;
     }
 

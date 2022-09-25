@@ -31,7 +31,7 @@ public final class DailyMissionProgressDto {
     public static DailyMissionProgressDto from(final MissionProgress missionProgress) {
         String proofImageUrl = null;
         if (missionProgress.getProofImages().size() != 0) {
-            proofImageUrl = new String(missionProgress.getProofImages().get(0).getUrl(), StandardCharsets.UTF_8);
+            proofImageUrl = missionProgress.getProofImages().get(0).getUrl();
         }
 
         return DailyMissionProgressDto.builder()

@@ -3,16 +3,16 @@ package com.bside.pjt.zerobackend.mission.controller;
 import com.bside.pjt.zerobackend.common.ErrorCode;
 import com.bside.pjt.zerobackend.common.exception.ServiceException;
 import com.bside.pjt.zerobackend.common.security.jwt.JwtPrincipal;
-import com.bside.pjt.zerobackend.mission.controller.request.ProveDailyMissionRequest;
+import com.bside.pjt.zerobackend.common.validation.ValidEvaluation;
 import com.bside.pjt.zerobackend.mission.controller.response.DailyMissionProgressResponse;
 import com.bside.pjt.zerobackend.mission.service.MissionService;
 import com.bside.pjt.zerobackend.mission.service.dto.DailyMissionProgressDto;
 import com.bside.pjt.zerobackend.mission.service.dto.MissionProgressDto;
+import com.bside.pjt.zerobackend.ncp.ObjectStorageService;
 import com.bside.pjt.zerobackend.reward.event.CreateAchieveRewardEvent;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -34,6 +36,7 @@ public class MissionController {
     private final ApplicationEventPublisher publisher;
 
     private final MissionService missionService;
+    private final ObjectStorageService objectStorageService;
 
     @GetMapping("apis/daily-mission-progress")
     public ResponseEntity<DailyMissionProgressResponse> findDailyMission(
@@ -72,14 +75,17 @@ public class MissionController {
     public ResponseEntity<Void> proveDailyMission(
         @AuthenticationPrincipal final JwtPrincipal principal,
         @PathVariable final Long missionProgressId,
-        @RequestBody @Valid final ProveDailyMissionRequest request
+        @RequestParam @ValidEvaluation String evaluation,
+        @RequestPart("proofImage") MultipartFile proofImage
     ) {
         final Long userId = principal.getId();
         if (userId == null || userId == 0) {
             throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1002);
         }
 
-        final CreateAchieveRewardEvent event = missionService.updateMissionProgress(userId, missionProgressId, request);
+        final String proofImageUrl = objectStorageService.upload(userId, proofImage);
+
+        final CreateAchieveRewardEvent event = missionService.updateMissionProgress(userId, missionProgressId, proofImageUrl, evaluation);
         publisher.publishEvent(event);
 
         return ResponseEntity.noContent().build();
