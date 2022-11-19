@@ -31,7 +31,7 @@ public class UserService {
 
     @Transactional
     public void create(final SignUpRequest request) {
-        if (userRepository.existsByEmailAndDeletedFalse(request.getEmail())) {
+        if (userRepository.existsByProviderAndEmailAndDeletedFalse(request.getProvider(), request.getEmail())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1013);
         }
 
@@ -42,6 +42,7 @@ public class UserService {
         final String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         final User user = new User(
+            request.getProvider(),
             request.getEmail(),
             request.getNickname(),
             encodedPassword,
@@ -53,7 +54,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User login(final LoginRequest request) {
-        final User user = userRepository.findByEmailAndDeletedFalse(request.getEmail())
+        final User user = userRepository.findByProviderAndEmailAndDeletedFalse(request.getProvider(), request.getEmail())
             .orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST.value(), ErrorCode.E1000));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

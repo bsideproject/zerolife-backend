@@ -1,6 +1,8 @@
 package com.bside.pjt.zerobackend.user.domain;
 
 import com.bside.pjt.zerobackend.common.domain.BaseEntity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +24,9 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
 
     private String email;
 
@@ -45,7 +50,8 @@ public class User extends BaseEntity {
 
     private boolean deleted;
 
-    public User(final String email, final String nickname, final String password, final boolean marketingAgreement) {
+    public User(final Provider provider, final String email, final String nickname, final String password, final boolean marketingAgreement) {
+        this.provider = provider;
         this.email = email;
         this.nickname = nickname;
         this.password = password;
